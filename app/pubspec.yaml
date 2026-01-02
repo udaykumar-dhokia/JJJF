@@ -43,6 +43,7 @@ dependencies:
   http: ^1.6.0
   provider: ^6.1.5+1
   clerk_auth: ^0.0.13-beta
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

@@ -7,6 +7,7 @@ import connectDB from "./config/db.config.js";
 import authRoutes from "./features/auth/auth.routes.js";
 import userRoutes from "./features/user/user.routes.js";
 import webhookRoutes from "./webhooks/clerk/user/userWebhook.routes.js";
+import directoryRoutes from "./features/directory/directory.routes.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +27,7 @@ app.use(
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/directory", directoryRoutes);
 
 server.listen(process.env.PORT || 3000, () => {
   log("Server is running...");

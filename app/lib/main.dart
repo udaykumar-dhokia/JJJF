@@ -1,3 +1,4 @@
+import "package:app/provider/directory_provider.dart";
 import "package:app/provider/user_provider.dart";
 import "package:app/screens/splash_screen.dart";
 import "package:flutter/material.dart";
@@ -6,7 +7,15 @@ import "package:provider/provider.dart";
 
 Future<void> main() async {
   await dotenv.load();
-  runApp(ChangeNotifierProvider(create: (_) => UserProvider(), child: MyApp()));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => DirectoryProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

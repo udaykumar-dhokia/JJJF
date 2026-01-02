@@ -1,4 +1,5 @@
 import 'package:app/provider/user_provider.dart';
+import 'package:app/screens/directory_screen.dart';
 import 'package:app/screens/home_screen.dart';
 import 'package:app/screens/onboard_screen.dart';
 import 'package:app/screens/profile_screen.dart';
@@ -83,6 +84,8 @@ class _BottomBarState extends State<BottomBar> {
           ),
           body: _selectedIndex == 0
               ? HomeScreen()
+              : _selectedIndex == 2
+              ? DirectoryScreen()
               : _selectedIndex == 4
               ? ProfileScreen()
               : const SizedBox(),
