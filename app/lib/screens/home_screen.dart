@@ -1,5 +1,7 @@
 import 'package:app/app_drawer.dart';
+import 'package:app/provider/navigation_provider.dart';
 import 'package:app/constants/color.dart';
+import 'package:provider/provider.dart';
 import 'package:app/constants/menu_items.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +133,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, item['route']);
+                              final route = item['route'];
+                              if (route == '/profile') {
+                                context.read<NavigationProvider>().setIndex(4);
+                              } else if (route == '/directory' ||
+                                  route == '/contacts') {
+                                context.read<NavigationProvider>().setIndex(2);
+                              } else if (route == '/news') {
+                                context.read<NavigationProvider>().setIndex(3);
+                              } else if (route == '/business') {
+                                context.read<NavigationProvider>().setIndex(1);
+                              } else {
+                                Navigator.pushNamed(context, route);
+                              }
                             },
                             child: CircleAvatar(
                               radius: 38,

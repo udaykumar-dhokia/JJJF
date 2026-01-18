@@ -1,5 +1,6 @@
 import 'package:app/constants/color.dart';
 import 'package:app/constants/menu_items.dart';
+import 'package:app/provider/navigation_provider.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -68,8 +69,20 @@ class AppDrawer extends StatelessWidget {
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    if (item['route'] != null) {
-                      Navigator.pushNamed(context, item['route']);
+                    final route = item['route'];
+                    if (route != null) {
+                      if (route == '/profile') {
+                        context.read<NavigationProvider>().setIndex(4);
+                      } else if (route == '/directory' ||
+                          route == '/contacts') {
+                        context.read<NavigationProvider>().setIndex(2);
+                      } else if (route == '/news') {
+                        context.read<NavigationProvider>().setIndex(3);
+                      } else if (route == '/business') {
+                        context.read<NavigationProvider>().setIndex(1);
+                      } else {
+                        Navigator.pushNamed(context, route);
+                      }
                     }
                   },
                 );

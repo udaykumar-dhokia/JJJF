@@ -1,6 +1,8 @@
+import 'package:app/provider/navigation_provider.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:app/screens/directory_screen.dart';
 import 'package:app/screens/home_screen.dart';
+import 'package:app/screens/news_screen.dart';
 import 'package:app/screens/onboard_screen.dart';
 import 'package:app/screens/profile_screen.dart';
 import 'package:flashy_tab_bar2/flashy_tab_bar2.dart';
@@ -18,8 +20,6 @@ class BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<BottomBar> {
-  var _selectedIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -51,10 +51,10 @@ class _BottomBarState extends State<BottomBar> {
 
         return Scaffold(
           bottomNavigationBar: FlashyTabBar(
-            selectedIndex: _selectedIndex,
+            selectedIndex: context.watch<NavigationProvider>().currentIndex,
             showElevation: true,
             onItemSelected: (index) {
-              setState(() => _selectedIndex = index);
+              context.read<NavigationProvider>().setIndex(index);
             },
             items: [
               FlashyTabBarItem(
@@ -82,12 +82,14 @@ class _BottomBarState extends State<BottomBar> {
               ),
             ],
           ),
-          body: _selectedIndex == 0
+          body: context.watch<NavigationProvider>().currentIndex == 0
               ? HomeScreen()
-              : _selectedIndex == 2
+              : context.watch<NavigationProvider>().currentIndex == 2
               ? DirectoryScreen()
-              : _selectedIndex == 4
+              : context.watch<NavigationProvider>().currentIndex == 4
               ? ProfileScreen()
+              : context.watch<NavigationProvider>().currentIndex == 3
+              ? NewsScreen()
               : const SizedBox(),
         );
       },

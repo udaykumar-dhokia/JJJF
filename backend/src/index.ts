@@ -8,6 +8,7 @@ import authRoutes from "./features/auth/auth.routes.js";
 import userRoutes from "./features/user/user.routes.js";
 import webhookRoutes from "./webhooks/clerk/user/userWebhook.routes.js";
 import directoryRoutes from "./features/directory/directory.routes.js";
+import newsRoutes from "./features/news/news.routes.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -15,19 +16,20 @@ const server = http.createServer(app);
 app.use(
   "/api/v1/webhook",
   express.raw({ type: "application/json" }),
-  webhookRoutes
+  webhookRoutes,
 );
 
 app.use(express.json());
 app.use(
   cors({
     origin: "*",
-  })
+  }),
 );
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/directory", directoryRoutes);
+app.use("/api/v1/news", newsRoutes);
 
 server.listen(process.env.PORT || 3000, () => {
   log("Server is running...");

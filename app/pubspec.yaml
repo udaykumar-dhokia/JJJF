@@ -44,6 +44,7 @@ dependencies:
   provider: ^6.1.5+1
   clerk_auth: ^0.0.13-beta
   url_launcher: ^6.3.2
+  timeago: ^3.6.1
 
 dev_dependencies:
   flutter_test:

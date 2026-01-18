@@ -128,6 +128,16 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(width: 8),
 
                       IconButton(
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primaryLight.withAlpha(18),
+                          foregroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: AppColors.primaryLight.withAlpha(78),
+                            ),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,

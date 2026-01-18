@@ -1,3 +1,4 @@
+import 'package:app/bottom_bar.dart';
 import 'package:app/constants/color.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,6 +59,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -71,6 +73,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Form(
           key: _formKey,
@@ -166,7 +169,12 @@ class _OnboardScreenState extends State<OnboardScreen> {
                             setState(() => _isLoading = false);
 
                             if (success) {
-                              Navigator.of(context).pop();
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const BottomBar(),
+                                ),
+                              );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
