@@ -93,174 +93,206 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            if (!user.isBusinessCompleted)
-              Card(
-                margin: const EdgeInsets.only(bottom: 20),
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: AppColors.primaryLight.withAlpha(60)),
-                ),
-                elevation: 0,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Complete your business profile",
-                              style: GoogleFonts.mulish(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await context.read<UserProvider>().fetchUser(forceRefresh: true);
+        },
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              if (!user.isBusinessCompleted)
+                Card(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: AppColors.primaryLight.withAlpha(60),
+                    ),
+                  ),
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Complete your business profile",
+                                style: GoogleFonts.mulish(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      IconButton(
-                        style: IconButton.styleFrom(
-                          backgroundColor: AppColors.primaryLight.withAlpha(18),
-                          foregroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: AppColors.primaryLight.withAlpha(78),
-                            ),
-                            borderRadius: BorderRadius.circular(100),
+                            ],
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const BusinessOnboardScreen(),
+                        const SizedBox(width: 8),
+
+                        IconButton(
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primaryLight.withAlpha(
+                              18,
                             ),
-                          );
-                        },
-                        icon: HugeIcon(
-                          icon: HugeIcons.strokeRoundedArrowRight01,
+                            foregroundColor: AppColors.primary,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                color: AppColors.primaryLight.withAlpha(78),
+                              ),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const BusinessOnboardScreen(),
+                              ),
+                            );
+                          },
+                          icon: HugeIcon(
+                            icon: HugeIcons.strokeRoundedArrowRight01,
+                          ),
+                          color: AppColors.primary,
                         ),
-                        color: AppColors.primary,
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                ),
+
+              CircleAvatar(
+                radius: 42,
+                backgroundColor: AppColors.primaryLight.withAlpha(30),
+                child: Text(
+                  user.firstName[0].toUpperCase(),
+                  style: GoogleFonts.mulish(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
 
-            CircleAvatar(
-              radius: 42,
-              backgroundColor: AppColors.primaryLight.withAlpha(30),
-              child: Text(
-                user.firstName[0].toUpperCase(),
+              Text(
+                "${user.firstName} ${user.lastName}",
                 style: GoogleFonts.mulish(
-                  fontSize: 28,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 4),
 
-            Text(
-              "${user.firstName} ${user.lastName}",
-              style: GoogleFonts.mulish(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              Text(
+                user.email,
+                style: GoogleFonts.mulish(color: Colors.grey.shade600),
               ),
-            ),
-            const SizedBox(height: 4),
 
-            Text(
-              user.email,
-              style: GoogleFonts.mulish(color: Colors.grey.shade600),
-            ),
+              const SizedBox(height: 24),
 
-            const SizedBox(height: 24),
-
-            _ProfileSection(
-              title: "Contact Information",
-              children: [
-                _ProfileTile(
-                  icon: HugeIcons.strokeRoundedCall,
-                  title: "Mobile",
-                  value: user.mobile.toString(),
-                ),
-                _ProfileTile(
-                  icon: HugeIcons.strokeRoundedMail01,
-                  title: "Email",
-                  value: user.email,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            _ProfileSection(
-              title: "Address",
-              children: [
-                _ProfileTile(
-                  icon: HugeIcons.strokeRoundedLocation01,
-                  title: "Address",
-                  value: user.address == null
-                      ? "Not provided"
-                      : "${user.address!.lineOne}\n"
-                            "${user.address!.lineTwo.isNotEmpty ? "${user.address!.lineTwo}\n" : ""}"
-                            "${user.address!.city}, ${user.address!.state}\n"
-                            "${user.address!.zipCode}",
-                ),
-              ],
-            ),
-
-            if (user.isBusinessCompleted && user.business != null) ...[
+              _ProfileSection(
+                title: "Personal Details",
+                children: [
+                  if (user.birthDate != null)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedBirthdayCake,
+                      title: "Birth Date",
+                      value:
+                          "${user.birthDate!.day}/${user.birthDate!.month}/${user.birthDate!.year}",
+                    ),
+                  if (user.anniversaryDate != null)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedCalendar03,
+                      title: "Anniversary",
+                      value:
+                          "${user.anniversaryDate!.day}/${user.anniversaryDate!.month}/${user.anniversaryDate!.year}",
+                    ),
+                ],
+              ),
               const SizedBox(height: 16),
 
               _ProfileSection(
-                title: "Business Details",
+                title: "Contact Information",
                 children: [
                   _ProfileTile(
-                    icon: HugeIcons.strokeRoundedStore01,
-                    title: "Business Name",
-                    value: user.business!.name!,
-                  ),
-                  _ProfileTile(
-                    icon: HugeIcons.strokeRoundedTag01,
-                    title: "Category",
-                    value: user.business!.category!,
-                  ),
-                  _ProfileTile(
                     icon: HugeIcons.strokeRoundedCall,
-                    title: "Contact",
-                    value: user.business!.contact.toString(),
+                    title: "Mobile",
+                    value: user.mobile.toString(),
                   ),
-                  if (user.business!.website != null &&
-                      user.business!.website!.isNotEmpty)
-                    _ProfileTile(
-                      icon: HugeIcons.strokeRoundedLink01,
-                      title: "Website",
-                      value: user.business!.website!,
-                    ),
                   _ProfileTile(
-                    icon: HugeIcons.strokeRoundedLocation01,
-                    title: "Address",
-                    value:
-                        "${user.business!.address!.lineOne}\n"
-                        "${user.business!.address!.lineTwo.isNotEmpty ? "${user.business!.address!.lineTwo}\n" : ""}"
-                        "${user.business!.address!.city}, ${user.business!.address!.state}\n"
-                        "${user.business!.address!.zipCode}",
+                    icon: HugeIcons.strokeRoundedMail01,
+                    title: "Email",
+                    value: user.email,
                   ),
                 ],
               ),
+
+              const SizedBox(height: 16),
+
+              _ProfileSection(
+                title: "Address",
+                children: [
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedLocation01,
+                    title: "Address",
+                    value: user.address == null
+                        ? "Not provided"
+                        : "${user.address!.lineOne}\n"
+                              "${user.address!.lineTwo.isNotEmpty ? "${user.address!.lineTwo}\n" : ""}"
+                              "${user.address!.city}, ${user.address!.state}\n"
+                              "${user.address!.zipCode}",
+                  ),
+                ],
+              ),
+
+              if (user.isBusinessCompleted && user.business != null) ...[
+                const SizedBox(height: 16),
+
+                _ProfileSection(
+                  title: "Business Details",
+                  children: [
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedStore01,
+                      title: "Business Name",
+                      value: user.business!.name!,
+                    ),
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedTag01,
+                      title: "Category",
+                      value: user.business!.category!,
+                    ),
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedCall,
+                      title: "Contact",
+                      value: user.business!.contact.toString(),
+                    ),
+                    if (user.business!.website != null &&
+                        user.business!.website!.isNotEmpty)
+                      _ProfileTile(
+                        icon: HugeIcons.strokeRoundedLink01,
+                        title: "Website",
+                        value: user.business!.website!,
+                      ),
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedLocation01,
+                      title: "Address",
+                      value:
+                          "${user.business!.address!.lineOne}\n"
+                          "${user.business!.address!.lineTwo.isNotEmpty ? "${user.business!.address!.lineTwo}\n" : ""}"
+                          "${user.business!.address!.city}, ${user.business!.address!.state}\n"
+                          "${user.business!.address!.zipCode}",
+                    ),
+                  ],
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

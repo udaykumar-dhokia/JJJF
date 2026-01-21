@@ -7,8 +7,10 @@ import connectDB from "./config/db.config.js";
 import authRoutes from "./features/auth/auth.routes.js";
 import userRoutes from "./features/user/user.routes.js";
 import webhookRoutes from "./webhooks/clerk/user/userWebhook.routes.js";
+import businessRoutes from "./features/business/business.routes.js";
 import directoryRoutes from "./features/directory/directory.routes.js";
 import newsRoutes from "./features/news/news.routes.js";
+import { backfillDates } from "./scripts/backfillDates.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -28,6 +30,7 @@ app.use(
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/business", businessRoutes);
 app.use("/api/v1/directory", directoryRoutes);
 app.use("/api/v1/news", newsRoutes);
 

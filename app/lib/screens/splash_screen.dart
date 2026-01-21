@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:path_provider/path_provider.dart';
+
 import 'package:app/bottom_bar.dart';
 import 'package:clerk_auth/clerk_auth.dart';
 import 'package:clerk_flutter/clerk_flutter.dart';
@@ -18,6 +20,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   String? _storedUserId;
   bool _isLoading = true;
+  Directory? _documentsDirectory;
 
   @override
   void initState() {
@@ -37,8 +40,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkStoredUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString("userId");
+    final docsDir = await getApplicationDocumentsDirectory();
 
     setState(() {
+      _documentsDirectory = docsDir;
       _storedUserId = userId;
       _isLoading = false;
     });
@@ -54,8 +59,11 @@ class _SplashScreenState extends State<SplashScreen> {
       return const BottomBar();
     }
     return ClerkAuth(
-      persistor: DefaultPersistor(getCacheDirectory: () => Directory.current),
+      persistor: DefaultPersistor(
+        getCacheDirectory: () => _documentsDirectory!,
+      ),
       config: ClerkAuthConfig(
+        isTestMode: false,
         publishableKey: dotenv.env["CLERK_PUBLISHABLE_KEY"]!,
         loading: const Scaffold(
           body: Center(child: CupertinoActivityIndicator(color: Colors.black)),
@@ -66,8 +74,10 @@ class _SplashScreenState extends State<SplashScreen> {
         backgroundColor: Colors.white,
         body: SafeArea(
           child: ClerkErrorListener(
-            handler: (context, error) =>
-                const Center(child: CupertinoActivityIndicator()),
+            handler: (context, error) => {
+              print(error),
+              const Center(child: CupertinoActivityIndicator()),
+            },
             child: ClerkAuthBuilder(
               signedInBuilder: (context, authState) {
                 final user = authState.user;

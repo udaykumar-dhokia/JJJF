@@ -9,7 +9,7 @@ const addressSchema = new mongoose.Schema(
     country: { type: String },
     zipCode: { type: Number },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const userSchema = new mongoose.Schema(
@@ -61,8 +61,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    birthDate: {
+      type: Date,
+    },
+    anniversaryDate: {
+      type: Date,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema);

@@ -4,6 +4,7 @@ import 'package:app/provider/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 
 class OnboardScreen extends StatefulWidget {
@@ -24,6 +25,12 @@ class _OnboardScreenState extends State<OnboardScreen> {
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
+  final TextEditingController _birthDateController = TextEditingController();
+  final TextEditingController _anniversaryDateController =
+      TextEditingController();
+
+  DateTime? _birthDate;
+  DateTime? _anniversaryDate;
 
   @override
   void dispose() {
@@ -34,14 +41,21 @@ class _OnboardScreenState extends State<OnboardScreen> {
     _stateController.dispose();
     _countryController.dispose();
     _zipCodeController.dispose();
+    _birthDateController.dispose();
+    _anniversaryDateController.dispose();
     super.dispose();
   }
 
-  InputDecoration _inputDecoration(String label, {String? hint}) {
+  InputDecoration _inputDecoration(
+    String label, {
+    String? hint,
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
       labelStyle: GoogleFonts.mulish(color: AppColors.primary),
       hintText: hint,
+      suffixIcon: suffixIcon,
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: AppColors.primary),
@@ -52,6 +66,34 @@ class _OnboardScreenState extends State<OnboardScreen> {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isBirthDate) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(primary: AppColors.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        if (isBirthDate) {
+          _birthDate = picked;
+          _birthDateController.text = "${picked.toLocal()}".split(' ')[0];
+        } else {
+          _anniversaryDate = picked;
+          _anniversaryDateController.text = "${picked.toLocal()}".split(' ')[0];
+        }
+      });
+    }
   }
 
   @override
@@ -95,6 +137,32 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 decoration: _inputDecoration("Mobile Number*"),
               ),
               const SizedBox(height: 8),
+
+              Text("Personal Details.", style: GoogleFonts.mulish()),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _birthDateController,
+                readOnly: true,
+                onTap: () => _selectDate(context, true),
+                decoration: _inputDecoration("Date of Birth*"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your birth date';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _anniversaryDateController,
+                readOnly: true,
+                onTap: () => _selectDate(context, false),
+                decoration: _inputDecoration(
+                  "Anniversary Date",
+                  hint: "Optional",
+                ),
+              ),
+              const SizedBox(height: 16),
 
               Text("Tell us where do you live.", style: GoogleFonts.mulish()),
               const SizedBox(height: 8),
@@ -164,6 +232,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                                   city: _cityController.text.trim(),
                                   state: _stateController.text.trim(),
                                   zip: int.parse(_zipCodeController.text),
+                                  birthDate: _birthDate!,
+                                  anniversaryDate: _anniversaryDate,
                                 );
 
                             setState(() => _isLoading = false);

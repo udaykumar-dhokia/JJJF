@@ -13,7 +13,32 @@ class DirectoryProvider with ChangeNotifier {
   List<DirectoryUser> get users => _users;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchDirectoryUsers() async {
+  List<DirectoryEvent> _upcomingEvents = [];
+  List<DirectoryEvent> get upcomingEvents => _upcomingEvents;
+
+  Future<void> fetchUpcomingEvents() async {
+    try {
+      final url = Uri.parse('${dotenv.env["BACKEND_URL"]!}/directory/upcoming');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> eventsJson = data['events'];
+        _upcomingEvents = eventsJson
+            .map((json) => DirectoryEvent.fromJson(json))
+            .toList();
+        notifyListeners();
+      } else {
+        debugPrint('Failed to fetch upcoming events: ${response.statusCode}');
+      }
+    } catch (error) {
+      debugPrint('Error fetching upcoming events: $error');
+    }
+  }
+
+  Future<void> fetchDirectoryUsers({bool forceRefresh = false}) async {
+    if (!forceRefresh && _users.isNotEmpty) return;
+
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString("userId");
 

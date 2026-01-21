@@ -27,9 +27,12 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
-  Future<void> _fetchNews() async {
+  Future<void> _fetchNews({bool forceRefresh = false}) async {
     setState(() => _isLoading = true);
-    await Provider.of<NewsProvider>(context, listen: false).fetchNews();
+    await Provider.of<NewsProvider>(
+      context,
+      listen: false,
+    ).fetchNews(forceRefresh: forceRefresh);
     setState(() => _isLoading = false);
   }
 
@@ -87,7 +90,7 @@ class _NewsScreenState extends State<NewsScreen> {
               icon: HugeIcons.strokeRoundedRefresh,
               color: AppColors.primary,
             ),
-            onPressed: _fetchNews,
+            onPressed: () => _fetchNews(forceRefresh: true),
           ),
         ],
       ),
@@ -118,7 +121,7 @@ class _NewsScreenState extends State<NewsScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: _fetchNews,
+            onRefresh: () => _fetchNews(forceRefresh: true),
             child: ListView.separated(
               physics: BouncingScrollPhysics(),
               itemCount: newsProvider.newsList.length,

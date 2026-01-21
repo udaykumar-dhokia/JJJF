@@ -2,9 +2,19 @@ import User from "../user/user.model.js";
 
 const AuthController = {
   onboard: async (req, res) => {
-    const { mobile, lineOne, lineTwo, city, state, zip, uuid } = req.body;
+    const {
+      mobile,
+      lineOne,
+      lineTwo,
+      city,
+      state,
+      zip,
+      uuid,
+      birthDate,
+      anniversaryDate,
+    } = req.body;
 
-    if (!mobile || !lineOne || !city || !state || !zip || !uuid) {
+    if (!mobile || !lineOne || !city || !state || !zip || !uuid || !birthDate) {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
@@ -14,6 +24,8 @@ const AuthController = {
         {
           isProfileCompleted: true,
           mobile,
+          birthDate,
+          anniversaryDate,
           address: {
             lineOne,
             lineTwo: lineTwo || "",
@@ -22,7 +34,7 @@ const AuthController = {
             zipCode: zip,
           },
         },
-        { new: true }
+        { new: true },
       );
 
       if (!user) {
@@ -86,7 +98,7 @@ const AuthController = {
             },
           },
         },
-        { new: true }
+        { new: true },
       );
 
       if (!user) {

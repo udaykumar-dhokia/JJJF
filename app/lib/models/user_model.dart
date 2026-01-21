@@ -10,8 +10,10 @@ class User {
   final bool isProfileCompleted;
   final bool isBusinessCompleted;
   final int? mobile;
+  final DateTime? birthDate;
+  final DateTime? anniversaryDate;
   final Address? address;
-  final Business? business;
+  final BusinessData? business;
 
   User({
     required this.id,
@@ -22,6 +24,8 @@ class User {
     required this.isProfileCompleted,
     required this.isBusinessCompleted,
     this.mobile,
+    this.birthDate,
+    this.anniversaryDate,
     this.address,
     this.business,
   });
@@ -36,8 +40,14 @@ class User {
       isProfileCompleted: json['isProfileCompleted'] ?? false,
       isBusinessCompleted: json['isBusinessCompleted'] ?? false,
       mobile: json['mobile'],
+      birthDate: json['birthDate'] != null
+          ? DateTime.parse(json['birthDate'])
+          : null,
+      anniversaryDate: json['anniversaryDate'] != null
+          ? DateTime.parse(json['anniversaryDate'])
+          : null,
       business: json['business'] != null
-          ? Business.fromJson(json['business'])
+          ? BusinessData.fromJson(json['business'])
           : null,
       address: json['address'] != null
           ? Address.fromJson(json['address'])

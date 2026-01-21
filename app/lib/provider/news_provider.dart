@@ -10,7 +10,8 @@ class NewsProvider with ChangeNotifier {
 
   List<News> get newsList => _newsList;
 
-  Future<void> fetchNews() async {
+  Future<void> fetchNews({bool forceRefresh = false}) async {
+    if (!forceRefresh && _newsList.isNotEmpty) return;
     try {
       final response = await http.get(
         Uri.parse('${dotenv.env["BACKEND_URL"]!}/news'),

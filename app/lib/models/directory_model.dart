@@ -30,3 +30,28 @@ class DirectoryUser {
     );
   }
 }
+
+class DirectoryEvent {
+  final String type; // 'birthday' or 'anniversary'
+  final DateTime eventDate; // The upcoming date in current/next year
+  final DateTime? originalDate; // The actual birth/anniversary date
+  final DirectoryUser user;
+
+  DirectoryEvent({
+    required this.type,
+    required this.eventDate,
+    this.originalDate,
+    required this.user,
+  });
+
+  factory DirectoryEvent.fromJson(Map<String, dynamic> json) {
+    return DirectoryEvent(
+      type: json['type'],
+      eventDate: DateTime.parse(json['eventDate']),
+      originalDate: json['originalDate'] != null
+          ? DateTime.parse(json['originalDate'])
+          : null,
+      user: DirectoryUser.fromJson(json['user']),
+    );
+  }
+}

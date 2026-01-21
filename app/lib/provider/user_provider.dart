@@ -8,10 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider with ChangeNotifier {
   User? _user;
+  bool _hasError = false;
+  String? _errorMessage;
 
   User? get user => _user;
+  bool get hasError => _hasError;
+  String? get errorMessage => _errorMessage;
 
-  Future<User?> fetchUser() async {
+  Future<User?> fetchUser({bool forceRefresh = false}) async {
+    if (!forceRefresh && _user != null) return _user;
     final prefs = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
@@ -21,14 +26,23 @@ class UserProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         _user = User.fromJson(json.decode(response.body));
+        _hasError = false;
+        _errorMessage = null;
         notifyListeners();
         return _user;
       } else {
         print('Error: ${response.statusCode}');
+        _hasError = true;
+        _errorMessage =
+            'Failed to load user data (Status: ${response.statusCode})';
+        notifyListeners();
         return null;
       }
     } catch (e) {
       print('Error: $e');
+      _hasError = true;
+      _errorMessage = 'Failed to connect to server';
+      notifyListeners();
       return null;
     }
   }
@@ -40,6 +54,8 @@ class UserProvider with ChangeNotifier {
     required String city,
     required String state,
     required int zip,
+    required DateTime birthDate,
+    DateTime? anniversaryDate,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final uuid = prefs.getString("userId");
@@ -58,6 +74,8 @@ class UserProvider with ChangeNotifier {
           "state": state,
           "zip": zip,
           "uuid": uuid,
+          "birthDate": birthDate.toIso8601String(),
+          "anniversaryDate": anniversaryDate?.toIso8601String(),
         }),
       );
 
@@ -65,6 +83,8 @@ class UserProvider with ChangeNotifier {
         final data = json.decode(response.body);
 
         _user = User.fromJson(data["user"]);
+        _hasError = false;
+        _errorMessage = null;
         notifyListeners();
 
         return true;
@@ -115,6 +135,9 @@ class UserProvider with ChangeNotifier {
         final data = json.decode(response.body);
 
         _user = User.fromJson(data["user"]);
+        // Ensure error state is cleared if successful
+        _hasError = false;
+        _errorMessage = null;
         notifyListeners();
 
         return true;

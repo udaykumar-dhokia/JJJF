@@ -1,13 +1,13 @@
 import 'package:app/models/address_model.dart';
 
-class Business {
+class BusinessData {
   final String? name;
   final String? category;
   final int? contact;
   final String? website;
   final Address? address;
 
-  Business({
+  BusinessData({
     this.name,
     this.category,
     this.contact,
@@ -15,8 +15,8 @@ class Business {
     this.address,
   });
 
-  factory Business.fromJson(Map<String, dynamic> json) {
-    return Business(
+  factory BusinessData.fromJson(Map<String, dynamic> json) {
+    return BusinessData(
       name: json['name'] as String?,
       category: json['category'] as String?,
       contact: json['contact'] as int?,
@@ -24,6 +24,22 @@ class Business {
       address: json['address'] != null
           ? Address.fromJson(json['address'] as Map<String, dynamic>)
           : null,
+    );
+  }
+}
+
+class BusinessUser {
+  final BusinessData? business;
+  final String uuid;
+
+  BusinessUser({this.business, required this.uuid});
+
+  factory BusinessUser.fromJson(Map<String, dynamic> json) {
+    return BusinessUser(
+      business: json['business'] != null
+          ? BusinessData.fromJson(json['business'] as Map<String, dynamic>)
+          : null,
+      uuid: json['uuid'] as String,
     );
   }
 }

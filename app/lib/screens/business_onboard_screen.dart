@@ -29,16 +29,18 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
   final TextEditingController _zipCodeController = TextEditingController();
 
   final List<String> _businessCategories = [
-    "Retail",
-    "Food & Beverage",
-    "Healthcare",
-    "Education",
-    "Technology",
-    "Finance",
-    "Real Estate",
-    "Manufacturing",
-    "Logistics",
-    "Other",
+    'Retail',
+    'Wholesale',
+    'Manufacturing',
+    'Service',
+    'Technology',
+    'Healthcare',
+    'Education',
+    'Real Estate',
+    'Finance',
+    'Construction',
+    'Food & Beverage',
+    'Consulting',
   ];
 
   @override

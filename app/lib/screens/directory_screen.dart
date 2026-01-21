@@ -26,7 +26,9 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DirectoryProvider>().fetchDirectoryUsers();
+      context.read<DirectoryProvider>().fetchDirectoryUsers(
+        forceRefresh: false,
+      );
     });
   }
 
@@ -136,72 +138,83 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               ),
             ),
           Expanded(
-            child: Consumer<DirectoryProvider>(
-              builder: (context, provider, child) {
-                final sortedUsers = [...provider.users]
-                  ..sort((a, b) {
-                    final nameA = '${a.firstName} ${a.lastName}'.toLowerCase();
-                    final nameB = '${b.firstName} ${b.lastName}'.toLowerCase();
-                    return nameA.compareTo(nameB);
-                  });
-
-                final filteredUsers = sortedUsers.where((user) {
-                  final fullName = '${user.firstName} ${user.lastName}'
-                      .toLowerCase();
-                  return fullName.contains(_searchQuery);
-                }).toList();
-
-                final Map<String, List<DirectoryUser>> groupedUsers = {};
-
-                for (var user in filteredUsers) {
-                  final letter = user.firstName[0].toUpperCase();
-                  groupedUsers.putIfAbsent(letter, () => []);
-                  groupedUsers[letter]!.add(user);
-                }
-
-                final sectionKeys = groupedUsers.keys.toList()..sort();
-
-                if (provider.isLoading) {
-                  return const Center(child: CupertinoActivityIndicator());
-                }
-
-                if (filteredUsers.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No members found',
-                      style: GoogleFonts.mulish(color: Colors.grey),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 2,
-                  ),
-                  itemCount: sectionKeys.length,
-                  itemBuilder: (context, index) {
-                    final letter = sectionKeys[index];
-                    final users = groupedUsers[letter]!;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSectionHeader(letter),
-                        const SizedBox(height: 8),
-                        ...users.map(
-                          (user) => Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: _buildUserCard(user),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                      ],
-                    );
-                  },
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await context.read<DirectoryProvider>().fetchDirectoryUsers(
+                  forceRefresh: true,
                 );
               },
+              color: AppColors.primary,
+              backgroundColor: Colors.white,
+              child: Consumer<DirectoryProvider>(
+                builder: (context, provider, child) {
+                  final sortedUsers = [...provider.users]
+                    ..sort((a, b) {
+                      final nameA = '${a.firstName} ${a.lastName}'
+                          .toLowerCase();
+                      final nameB = '${b.firstName} ${b.lastName}'
+                          .toLowerCase();
+                      return nameA.compareTo(nameB);
+                    });
+
+                  final filteredUsers = sortedUsers.where((user) {
+                    final fullName = '${user.firstName} ${user.lastName}'
+                        .toLowerCase();
+                    return fullName.contains(_searchQuery);
+                  }).toList();
+
+                  final Map<String, List<DirectoryUser>> groupedUsers = {};
+
+                  for (var user in filteredUsers) {
+                    final letter = user.firstName[0].toUpperCase();
+                    groupedUsers.putIfAbsent(letter, () => []);
+                    groupedUsers[letter]!.add(user);
+                  }
+
+                  final sectionKeys = groupedUsers.keys.toList()..sort();
+
+                  if (provider.isLoading) {
+                    return const Center(child: CupertinoActivityIndicator());
+                  }
+
+                  if (filteredUsers.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No members found',
+                        style: GoogleFonts.mulish(color: Colors.grey),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 2,
+                    ),
+                    itemCount: sectionKeys.length,
+                    itemBuilder: (context, index) {
+                      final letter = sectionKeys[index];
+                      final users = groupedUsers[letter]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionHeader(letter),
+                          const SizedBox(height: 8),
+                          ...users.map(
+                            (user) => Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: _buildUserCard(user),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -278,15 +291,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                     ),
                 ],
               ),
-            ),
-
-            IconButton(
-              icon: HugeIcon(
-                icon: HugeIcons.strokeRoundedSent,
-                size: 18,
-                color: Colors.grey[700],
-              ),
-              onPressed: () => _launchEmail(user.email),
             ),
             if (user.mobile != null)
               IconButton(
