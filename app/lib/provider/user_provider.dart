@@ -55,6 +55,7 @@ class UserProvider with ChangeNotifier {
     required String state,
     required int zip,
     required DateTime birthDate,
+    required String gender,
     DateTime? anniversaryDate,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -76,6 +77,7 @@ class UserProvider with ChangeNotifier {
           "uuid": uuid,
           "birthDate": birthDate.toIso8601String(),
           "anniversaryDate": anniversaryDate?.toIso8601String(),
+          "gender": gender,
         }),
       );
 

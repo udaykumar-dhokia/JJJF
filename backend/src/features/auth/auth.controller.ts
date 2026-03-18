@@ -12,9 +12,19 @@ const AuthController = {
       uuid,
       birthDate,
       anniversaryDate,
+      gender,
     } = req.body;
 
-    if (!mobile || !lineOne || !city || !state || !zip || !uuid || !birthDate) {
+    if (
+      !mobile ||
+      !lineOne ||
+      !city ||
+      !state ||
+      !zip ||
+      !uuid ||
+      !birthDate ||
+      !gender
+    ) {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
@@ -33,6 +43,7 @@ const AuthController = {
             state,
             zipCode: zip,
           },
+          gender,
         },
         { new: true },
       );

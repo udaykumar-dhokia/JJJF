@@ -1,10 +1,10 @@
 import 'package:app/bottom_bar.dart';
 import 'package:app/constants/color.dart';
 import 'package:app/provider/user_provider.dart';
+import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 
 class OnboardScreen extends StatefulWidget {
@@ -21,13 +21,15 @@ class _OnboardScreenState extends State<OnboardScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressLine1Controller = TextEditingController();
   final TextEditingController _addressLine2Controller = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
   final TextEditingController _anniversaryDateController =
       TextEditingController();
+
+  String genderValue = "";
+  String countryValue = "India";
+  String stateValue = "";
+  String cityValue = "";
 
   DateTime? _birthDate;
   DateTime? _anniversaryDate;
@@ -37,9 +39,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
     _phoneController.dispose();
     _addressLine1Controller.dispose();
     _addressLine2Controller.dispose();
-    _cityController.dispose();
-    _stateController.dispose();
-    _countryController.dispose();
     _zipCodeController.dispose();
     _birthDateController.dispose();
     _anniversaryDateController.dispose();
@@ -140,6 +139,48 @@ class _OnboardScreenState extends State<OnboardScreen> {
 
               Text("Personal Details.", style: GoogleFonts.mulish()),
               const SizedBox(height: 8),
+
+              Text("Gender*", style: GoogleFonts.mulish()),
+              const SizedBox(height: 8),
+
+              Row(
+                children: ["Male", "Female", "Other"].map((gender) {
+                  final bool isSelected = genderValue == gender;
+
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          genderValue = gender;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: isSelected ? AppColors.primary : Colors.white,
+                          border: Border.all(
+                            color: isSelected ? AppColors.primary : Colors.grey,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            gender,
+                            style: GoogleFonts.mulish(
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 16),
+
               TextFormField(
                 controller: _birthDateController,
                 readOnly: true,
@@ -152,6 +193,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                   return null;
                 },
               ),
+
               const SizedBox(height: 16),
               TextFormField(
                 controller: _anniversaryDateController,
@@ -182,21 +224,49 @@ class _OnboardScreenState extends State<OnboardScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
-                controller: _cityController,
-                decoration: _inputDecoration("City*"),
-              ),
-              const SizedBox(height: 16),
+              Text("Location Details", style: GoogleFonts.mulish()),
+              SizedBox(height: 8),
 
-              TextFormField(
-                controller: _stateController,
-                decoration: _inputDecoration("State*"),
-              ),
-              const SizedBox(height: 16),
+              CSCPicker(
+                showStates: true,
+                showCities: true,
 
-              TextFormField(
-                controller: _countryController,
-                decoration: _inputDecoration("Country*"),
+                defaultCountry: CscCountry.India,
+
+                countryDropdownLabel: "Country*",
+                stateDropdownLabel: "State*",
+                cityDropdownLabel: "City*",
+
+                dropdownItemStyle: GoogleFonts.mulish(),
+
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade400),
+                ),
+
+                disabledDropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade400),
+                ),
+
+                onCountryChanged: (country) {
+                  setState(() {
+                    countryValue = country;
+                  });
+                },
+
+                onStateChanged: (state) {
+                  setState(() {
+                    stateValue = state ?? "";
+                    cityValue = "";
+                  });
+                },
+
+                onCityChanged: (city) {
+                  setState(() {
+                    cityValue = city ?? "";
+                  });
+                },
               ),
               const SizedBox(height: 16),
 
@@ -229,10 +299,11 @@ class _OnboardScreenState extends State<OnboardScreen> {
                                   mobile: int.parse(_phoneController.text),
                                   lineOne: _addressLine1Controller.text.trim(),
                                   lineTwo: _addressLine2Controller.text.trim(),
-                                  city: _cityController.text.trim(),
-                                  state: _stateController.text.trim(),
+                                  city: cityValue,
+                                  state: stateValue,
                                   zip: int.parse(_zipCodeController.text),
                                   birthDate: _birthDate!,
+                                  gender: genderValue,
                                   anniversaryDate: _anniversaryDate,
                                 );
 

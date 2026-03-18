@@ -14,6 +14,7 @@ class User {
   final DateTime? anniversaryDate;
   final Address? address;
   final BusinessData? business;
+  final String? gender;
 
   User({
     required this.id,
@@ -27,12 +28,14 @@ class User {
     this.birthDate,
     this.anniversaryDate,
     this.address,
+    required this.gender,
     this.business,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['_id'],
+      gender: json['gender'],
       uuid: json['uuid'],
       firstName: json['firstName'],
       lastName: json['lastName'],

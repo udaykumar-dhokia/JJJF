@@ -2,6 +2,7 @@ import "package:app/app_drawer.dart";
 import "package:app/constants/color.dart";
 import "package:app/provider/news_provider.dart";
 import "package:app/screens/create_news_screen.dart";
+import "package:flutter/cupertino.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
@@ -97,7 +98,7 @@ class _NewsScreenState extends State<NewsScreen> {
       body: Consumer<NewsProvider>(
         builder: (context, newsProvider, child) {
           if (_isLoading && newsProvider.newsList.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CupertinoActivityIndicator());
           }
 
           if (newsProvider.newsList.isEmpty) {
