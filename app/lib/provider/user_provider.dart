@@ -57,6 +57,12 @@ class UserProvider with ChangeNotifier {
     required DateTime birthDate,
     required String gender,
     DateTime? anniversaryDate,
+    String? gaon,
+    String? district,
+    String? currentCity,
+    String? maritalStatus,
+    String? jobRole,
+    String? companyName,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final uuid = prefs.getString("userId");
@@ -78,6 +84,12 @@ class UserProvider with ChangeNotifier {
           "birthDate": birthDate.toIso8601String(),
           "anniversaryDate": anniversaryDate?.toIso8601String(),
           "gender": gender,
+          "gaon": gaon,
+          "district": district,
+          "currentCity": currentCity,
+          "maritalStatus": maritalStatus,
+          "jobRole": jobRole,
+          "companyName": companyName,
         }),
       );
 
@@ -149,6 +161,69 @@ class UserProvider with ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Onboard exception: $e');
+      return false;
+    }
+  }
+  Future<bool> updateUserProfile({
+    required int mobile,
+    required String lineOne,
+    String? lineTwo,
+    required String city,
+    required String state,
+    required int zip,
+    required DateTime birthDate,
+    DateTime? anniversaryDate,
+    String? gaon,
+    String? district,
+    String? currentCity,
+    String? maritalStatus,
+    String? jobRole,
+    String? companyName,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final uuid = prefs.getString("userId");
+
+    if (uuid == null) return false;
+
+    try {
+      final response = await http.put(
+        Uri.parse('${dotenv.env["BACKEND_URL"]!}/user/$uuid'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "mobile": mobile,
+          "address": {
+            "lineOne": lineOne,
+            "lineTwo": lineTwo ?? "",
+            "city": city,
+            "state": state,
+            "zipCode": zip,
+          },
+          "birthDate": birthDate.toIso8601String(),
+          "anniversaryDate": anniversaryDate?.toIso8601String(),
+          "gaon": gaon,
+          "district": district,
+          "currentCity": currentCity,
+          "maritalStatus": maritalStatus,
+          "jobRole": jobRole,
+          "companyName": companyName,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        _user = User.fromJson(data["user"]);
+        _hasError = false;
+        _errorMessage = null;
+        notifyListeners();
+
+        return true;
+      } else {
+        debugPrint('Update error: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Update exception: $e');
       return false;
     }
   }

@@ -43,6 +43,25 @@ const userSchema = new mongoose.Schema(
       type: Number,
     },
     address: addressSchema,
+    gaon: {
+      type: String,
+    },
+    district: {
+      type: String,
+    },
+    currentCity: {
+      type: String,
+    },
+    maritalStatus: {
+      type: String,
+      enum: ["Single", "Married", "Widowed", "Divorced"],
+    },
+    jobRole: {
+      type: String,
+    },
+    companyName: {
+      type: String,
+    },
     business: {
       name: {
         type: String,

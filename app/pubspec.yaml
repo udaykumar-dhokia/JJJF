@@ -48,7 +48,6 @@ dependencies:
   timeago: ^3.6.1
   carousel_slider: ^5.0.0
   flutter_launcher_icons: ^0.14.4
-  csc_picker: ^0.2.7
 
 dev_dependencies:
   flutter_test:
@@ -84,7 +83,6 @@ flutter:
   assets:
     - .env
     - lib/assets/
-    - packages/csc_picker/lib/assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

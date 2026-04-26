@@ -2,6 +2,7 @@ import 'package:app/app_drawer.dart';
 import 'package:app/constants/color.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:app/screens/business_onboard_screen.dart';
+import 'package:app/screens/edit_profile_screen.dart';
 import 'package:app/screens/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,12 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             color: Colors.black,
             tooltip: "Edit",
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+              );
+            },
             icon: HugeIcon(icon: HugeIcons.strokeRoundedEdit03, size: 18),
             style: IconButton.styleFrom(
               backgroundColor: AppColors.primaryLight.withAlpha(18),
@@ -213,6 +219,47 @@ class ProfileScreen extends StatelessWidget {
                       value:
                           "${user.anniversaryDate!.day}/${user.anniversaryDate!.month}/${user.anniversaryDate!.year}",
                     ),
+                  if (user.maritalStatus != null &&
+                      user.maritalStatus!.isNotEmpty)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedUserGroup,
+                      title: "Marital Status",
+                      value: user.maritalStatus!,
+                    ),
+                  if (user.gaon != null && user.gaon!.isNotEmpty)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedHome01,
+                      title: "Native Village (Gaon)",
+                      value: user.gaon!,
+                    ),
+                  if (user.district != null && user.district!.isNotEmpty)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedMapPin,
+                      title: "District",
+                      value: user.district!,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              _ProfileSection(
+                title: "Professional Details",
+                children: [
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedWorkHistory,
+                    title: "Job Role",
+                    value: user.jobRole != null && user.jobRole!.isNotEmpty
+                        ? user.jobRole!
+                        : "Not specified",
+                  ),
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedBuilding01,
+                    title: "Company",
+                    value:
+                        user.companyName != null && user.companyName!.isNotEmpty
+                            ? user.companyName!
+                            : "Not specified",
+                  ),
                 ],
               ),
               const SizedBox(height: 16),

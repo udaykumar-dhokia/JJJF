@@ -4,7 +4,7 @@ import 'package:app/models/business_model.dart';
 import 'package:app/provider/business_provider.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:app/screens/user_contact_screen.dart';
-import 'package:csc_picker/csc_picker.dart';
+import 'package:app/widgets/location_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -565,50 +565,20 @@ class _BusinessScreenState extends State<BusinessScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  CSCPicker(
-                    showStates: true,
-                    showCities: true,
-                    flagState: CountryFlag.DISABLE,
-
-                    dropdownDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey.shade300, width: 1),
-                    ),
-
-                    disabledDropdownDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.grey.shade100,
-                      border: Border.all(color: Colors.grey.shade300, width: 1),
-                    ),
-
-                    countrySearchPlaceholder: "Country",
-                    stateSearchPlaceholder: "State",
-                    citySearchPlaceholder: "City",
-
-                    countryDropdownLabel: "Country",
+                  IndiaLocationPicker(
+                    selectedState: _selectedState,
+                    selectedCity: _selectedCity,
                     stateDropdownLabel: "State",
                     cityDropdownLabel: "City",
-
-                    currentCountry: _selectedCountry.isNotEmpty
-                        ? _selectedCountry
-                        : "India",
-                    currentState: _selectedState,
-                    currentCity: _selectedCity,
-
-                    onCountryChanged: (value) {
+                    onStateChanged: (state) {
                       setModalState(() {
-                        _selectedCountry = value;
+                        _selectedState = state ?? "";
+                        _selectedCity = "";
                       });
                     },
-                    onStateChanged: (value) {
+                    onCityChanged: (city) {
                       setModalState(() {
-                        _selectedState = value ?? "";
-                      });
-                    },
-                    onCityChanged: (value) {
-                      setModalState(() {
-                        _selectedCity = value ?? "";
+                        _selectedCity = city ?? "";
                       });
                     },
                   ),

@@ -1,20 +1,20 @@
-import 'package:app/bottom_bar.dart';
 import 'package:app/constants/color.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:app/widgets/location_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 
-class OnboardScreen extends StatefulWidget {
-  const OnboardScreen({super.key});
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
 
   @override
-  State<OnboardScreen> createState() => _OnboardScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _OnboardScreenState extends State<OnboardScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
@@ -30,14 +30,45 @@ class _OnboardScreenState extends State<OnboardScreen> {
   final TextEditingController _jobRoleController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
 
-  String genderValue = "";
-  String maritalStatusValue = "";
-  String countryValue = "India";
   String stateValue = "";
   String cityValue = "";
+  String maritalStatusValue = "";
 
   DateTime? _birthDate;
   DateTime? _anniversaryDate;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = context.read<UserProvider>().user;
+      if (user != null) {
+        _phoneController.text = user.mobile.toString();
+        _birthDate = user.birthDate;
+        if (_birthDate != null) {
+          _birthDateController.text = "${_birthDate!.toLocal()}".split(' ')[0];
+        }
+        _anniversaryDate = user.anniversaryDate;
+        if (_anniversaryDate != null) {
+          _anniversaryDateController.text = "${_anniversaryDate!.toLocal()}"
+              .split(' ')[0];
+        }
+        if (user.address != null) {
+          _addressLine1Controller.text = user.address!.lineOne;
+          _addressLine2Controller.text = user.address!.lineTwo;
+          _zipCodeController.text = user.address!.zipCode.toString();
+          stateValue = user.address!.state;
+          cityValue = user.address!.city;
+        }
+        _gaonController.text = user.gaon ?? "";
+        _districtController.text = user.district ?? "";
+        maritalStatusValue = user.maritalStatus ?? "";
+        _jobRoleController.text = user.jobRole ?? "";
+        _companyNameController.text = user.companyName ?? "";
+        setState(() {}); // Trigger rebuild to show values in custom dropdown
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -79,7 +110,9 @@ class _OnboardScreenState extends State<OnboardScreen> {
   Future<void> _selectDate(BuildContext context, bool isBirthDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: isBirthDate
+          ? (_birthDate ?? DateTime.now())
+          : (_anniversaryDate ?? DateTime.now()),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -109,12 +142,28 @@ class _OnboardScreenState extends State<OnboardScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        elevation: 0,
+        leading: Builder(
+          builder: (context) => Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primaryLight.withAlpha(18),
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.primaryLight.withAlpha(78)),
+            ),
+            child: IconButton(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowLeft01,
+                size: 18,
+              ),
+              color: AppColors.primary,
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ),
         title: Text(
-          "Profile",
+          "Edit Profile",
           style: GoogleFonts.mulish(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -123,86 +172,35 @@ class _OnboardScreenState extends State<OnboardScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Complete your profile by submitting the below details to continue using the application and stay connected with community.",
-                style: GoogleFonts.mulish(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 18),
-              Text("Tell us your contact number.", style: GoogleFonts.mulish()),
+              Text("Update your contact number.", style: GoogleFonts.mulish()),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 maxLength: 10,
                 decoration: _inputDecoration("Mobile Number*"),
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 8),
-
-              Text("Personal Details.", style: GoogleFonts.mulish()),
-              const SizedBox(height: 8),
-
-              Text("Gender*", style: GoogleFonts.mulish()),
-              const SizedBox(height: 8),
-
-              Row(
-                children: ["Male", "Female", "Other"].map((gender) {
-                  final bool isSelected = genderValue == gender;
-
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          genderValue = gender;
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: isSelected ? AppColors.primary : Colors.white,
-                          border: Border.all(
-                            color: isSelected ? AppColors.primary : Colors.grey,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            gender,
-                            style: GoogleFonts.mulish(
-                              fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.white : Colors.black,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-
               const SizedBox(height: 16),
 
+              Text("Personal Details", style: GoogleFonts.mulish()),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: _birthDateController,
                 readOnly: true,
                 onTap: () => _selectDate(context, true),
                 decoration: _inputDecoration("Date of Birth*"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your birth date';
-                  }
-                  return null;
-                },
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
-
               const SizedBox(height: 16),
               TextFormField(
                 controller: _anniversaryDateController,
@@ -223,10 +221,12 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 value: maritalStatusValue.isEmpty ? null : maritalStatusValue,
                 decoration: _inputDecoration("Marital Status*"),
                 items: ["Single", "Married", "Widowed", "Divorced"]
-                    .map((status) => DropdownMenuItem(
-                          value: status,
-                          child: Text(status, style: GoogleFonts.mulish()),
-                        ))
+                    .map(
+                      (status) => DropdownMenuItem(
+                        value: status,
+                        child: Text(status, style: GoogleFonts.mulish()),
+                      ),
+                    )
                     .toList(),
                 onChanged: (val) {
                   setState(() {
@@ -272,15 +272,15 @@ class _OnboardScreenState extends State<OnboardScreen> {
               ),
               const SizedBox(height: 16),
 
-              Text("Tell us where do you live.", style: GoogleFonts.mulish()),
+              Text("Address Details", style: GoogleFonts.mulish()),
               const SizedBox(height: 8),
-
               TextFormField(
                 controller: _addressLine1Controller,
                 decoration: _inputDecoration("Address Line 1*"),
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _addressLine2Controller,
                 decoration: _inputDecoration(
@@ -289,9 +289,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              Text("Location Details", style: GoogleFonts.mulish()),
-              SizedBox(height: 8),
 
               IndiaLocationPicker(
                 selectedState: stateValue,
@@ -317,6 +314,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 keyboardType: TextInputType.number,
                 maxLength: 6,
                 decoration: _inputDecoration("Zip Code*"),
+                validator: (val) =>
+                    val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 30),
 
@@ -334,10 +333,23 @@ class _OnboardScreenState extends State<OnboardScreen> {
                       ? null
                       : () async {
                           if (_formKey.currentState!.validate()) {
+                            if (stateValue.isEmpty || cityValue.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Please select State and City.",
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            if (_birthDate == null) return;
+
                             setState(() => _isLoading = true);
+
                             final success = await context
                                 .read<UserProvider>()
-                                .onboardUser(
+                                .updateUserProfile(
                                   mobile: int.parse(_phoneController.text),
                                   lineOne: _addressLine1Controller.text.trim(),
                                   lineTwo: _addressLine2Controller.text.trim(),
@@ -345,31 +357,31 @@ class _OnboardScreenState extends State<OnboardScreen> {
                                   state: stateValue,
                                   zip: int.parse(_zipCodeController.text),
                                   birthDate: _birthDate!,
-                                  gender: genderValue,
                                   anniversaryDate: _anniversaryDate,
                                   gaon: _gaonController.text.trim(),
                                   district: _districtController.text.trim(),
                                   currentCity: cityValue,
                                   maritalStatus: maritalStatusValue,
                                   jobRole: _jobRoleController.text.trim(),
-                                  companyName: _companyNameController.text.trim(),
+                                  companyName: _companyNameController.text
+                                      .trim(),
                                 );
 
                             setState(() => _isLoading = false);
 
                             if (success) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const BottomBar(),
-                                ),
-                              );
-                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    "Failed to complete onboarding",
+                                    "Profile updated successfully!",
                                   ),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Failed to update profile"),
                                 ),
                               );
                             }
@@ -384,7 +396,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                           ),
                         )
                       : Text(
-                          "Continue",
+                          "Save Changes",
                           style: GoogleFonts.mulish(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -393,6 +405,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
                         ),
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

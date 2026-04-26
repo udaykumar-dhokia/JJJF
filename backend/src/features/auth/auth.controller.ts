@@ -13,6 +13,12 @@ const AuthController = {
       birthDate,
       anniversaryDate,
       gender,
+      gaon,
+      district,
+      currentCity,
+      maritalStatus,
+      jobRole,
+      companyName,
     } = req.body;
 
     if (
@@ -44,6 +50,12 @@ const AuthController = {
             zipCode: zip,
           },
           gender,
+          gaon,
+          district,
+          currentCity,
+          maritalStatus,
+          jobRole,
+          companyName,
         },
         { new: true },
       );

@@ -2,6 +2,7 @@ import "package:app/app_drawer.dart";
 import "package:app/constants/color.dart";
 import "package:app/provider/news_provider.dart";
 import "package:app/screens/create_news_screen.dart";
+import "package:app/screens/news_detail_screen.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
@@ -130,70 +131,86 @@ class _NewsScreenState extends State<NewsScreen> {
                   Divider(height: 1, color: Colors.grey.shade100),
               itemBuilder: (context, index) {
                 final news = newsProvider.newsList[index];
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        child: Text(
-                          news.title[0].toUpperCase(),
-                          style: GoogleFonts.mulish(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
+                return InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => NewsDetailScreen(news: news),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
+                          child: Text(
+                            news.title[0].toUpperCase(),
+                            style: GoogleFonts.mulish(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        news.authorName,
-                                        style: GoogleFonts.mulish(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          news.authorName,
+                                          style: GoogleFonts.mulish(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        news.title,
-                                        style: GoogleFonts.mulish(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          color: Colors.grey[700],
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          news.title,
+                                          style: GoogleFonts.mulish(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                            color: Colors.grey[700],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  timeago.format(
-                                    DateTime.parse(news.createdAt),
+                                  Text(
+                                    timeago.format(
+                                      DateTime.parse(news.createdAt),
+                                    ),
+                                    style: GoogleFonts.mulish(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
-                                  style: GoogleFonts.mulish(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            _ExpandableText(text: news.content),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                news.content,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.mulish(
+                                    fontSize: 14, height: 1.4),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },

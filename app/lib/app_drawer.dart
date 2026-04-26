@@ -80,6 +80,8 @@ class AppDrawer extends StatelessWidget {
                         context.read<NavigationProvider>().setIndex(3);
                       } else if (route == '/business') {
                         context.read<NavigationProvider>().setIndex(1);
+                      } else if (route == '/jobs') {
+                        Navigator.pushNamed(context, route);
                       } else {
                         Navigator.pushNamed(context, route);
                       }

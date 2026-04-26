@@ -4,6 +4,7 @@ import 'package:app/provider/directory_provider.dart';
 import 'package:app/constants/color.dart';
 import 'package:app/screens/anniversaries_screen.dart';
 import 'package:app/screens/birthdays_screen.dart';
+import 'package:app/screens/job_board_screen.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
@@ -177,6 +178,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             context.read<NavigationProvider>().setIndex(3);
                           } else if (route == '/business') {
                             context.read<NavigationProvider>().setIndex(1);
+                          } else if (route == '/jobs') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const JobBoardScreen(),
+                              ),
+                            );
                           } else if (route == '/birthday') {
                             Navigator.push(
                               context,

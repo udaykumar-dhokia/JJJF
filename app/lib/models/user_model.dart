@@ -15,6 +15,12 @@ class User {
   final Address? address;
   final BusinessData? business;
   final String? gender;
+  final String? gaon;
+  final String? district;
+  final String? currentCity;
+  final String? maritalStatus;
+  final String? jobRole;
+  final String? companyName;
 
   User({
     required this.id,
@@ -30,6 +36,12 @@ class User {
     this.address,
     required this.gender,
     this.business,
+    this.gaon,
+    this.district,
+    this.currentCity,
+    this.maritalStatus,
+    this.jobRole,
+    this.companyName,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -55,6 +67,12 @@ class User {
       address: json['address'] != null
           ? Address.fromJson(json['address'])
           : null,
+      gaon: json['gaon'],
+      district: json['district'],
+      currentCity: json['currentCity'],
+      maritalStatus: json['maritalStatus'],
+      jobRole: json['jobRole'],
+      companyName: json['companyName'],
     );
   }
 }

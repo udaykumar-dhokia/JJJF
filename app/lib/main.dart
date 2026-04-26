@@ -2,6 +2,8 @@ import "package:app/provider/news_provider.dart";
 import "package:app/provider/navigation_provider.dart";
 import "package:app/provider/directory_provider.dart";
 import "package:app/provider/business_provider.dart";
+import "package:app/provider/job_provider.dart";
+import "package:app/screens/job_board_screen.dart";
 import "package:app/provider/user_provider.dart";
 import "package:app/screens/splash_screen.dart";
 import "package:flutter/material.dart";
@@ -17,6 +19,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => DirectoryProvider()),
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
         ChangeNotifierProvider(create: (_) => NewsProvider()),
+        ChangeNotifierProvider(create: (_) => JobProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
       ],
       child: MyApp(),
@@ -29,6 +32,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
+      routes: {
+        '/jobs': (_) => const JobBoardScreen(),
+      },
+    );
   }
 }

@@ -10,6 +10,7 @@ import webhookRoutes from "./webhooks/clerk/user/userWebhook.routes.js";
 import businessRoutes from "./features/business/business.routes.js";
 import directoryRoutes from "./features/directory/directory.routes.js";
 import newsRoutes from "./features/news/news.routes.js";
+import jobRoutes from "./features/jobs/job.routes.js";
 import { backfillDates } from "./scripts/backfillDates.js";
 
 const app = express();
@@ -33,6 +34,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/business", businessRoutes);
 app.use("/api/v1/directory", directoryRoutes);
 app.use("/api/v1/news", newsRoutes);
+app.use("/api/v1/jobs", jobRoutes);
 
 server.listen(process.env.PORT || 3000, () => {
   log("Server is running...");

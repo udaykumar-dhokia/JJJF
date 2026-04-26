@@ -17,6 +17,11 @@ final List<Map<String, dynamic>> menuItems = [
     'route': '/business',
   },
   {
+    'icon': HugeIcons.strokeRoundedBriefcase01,
+    'label': 'Job Board',
+    'route': '/jobs',
+  },
+  {
     'icon': HugeIcons.strokeRoundedBirthdayCake,
     'label': 'Birthday',
     'route': '/birthday',

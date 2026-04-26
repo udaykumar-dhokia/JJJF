@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:app/widgets/location_picker.dart';
 
 class BusinessOnboardScreen extends StatefulWidget {
   const BusinessOnboardScreen({super.key});
@@ -23,8 +24,8 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
 
   final TextEditingController _addressLine1Controller = TextEditingController();
   final TextEditingController _addressLine2Controller = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
+  String _stateValue = '';
+  String _cityValue = '';
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
 
@@ -41,14 +42,13 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
     'Construction',
     'Food & Beverage',
     'Consulting',
+    'Others',
   ];
 
   @override
   void dispose() {
     _addressLine1Controller.dispose();
     _addressLine2Controller.dispose();
-    _cityController.dispose();
-    _stateController.dispose();
     _countryController.dispose();
     _zipCodeController.dispose();
     _contactController.dispose();
@@ -185,15 +185,25 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFormField(
-                controller: _cityController,
-                decoration: _inputDecoration("City*"),
-              ),
-              const SizedBox(height: 16),
+              Text("Location Details", style: GoogleFonts.mulish()),
+              SizedBox(height: 8),
 
-              TextFormField(
-                controller: _stateController,
-                decoration: _inputDecoration("State*"),
+              IndiaLocationPicker(
+                selectedState: _stateValue,
+                selectedCity: _cityValue,
+                stateDropdownLabel: "State*",
+                cityDropdownLabel: "City*",
+                onStateChanged: (state) {
+                  setState(() {
+                    _stateValue = state ?? "";
+                    _cityValue = "";
+                  });
+                },
+                onCityChanged: (city) {
+                  setState(() {
+                    _cityValue = city ?? "";
+                  });
+                },
               ),
               const SizedBox(height: 16),
 
@@ -225,14 +235,20 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
                       ? null
                       : () async {
                           if (_formKey.currentState!.validate()) {
+                            if (_stateValue.isEmpty || _cityValue.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Please select State and City.")),
+                              );
+                              return;
+                            }
                             setState(() => _isLoading = true);
                             final success = await context
                                 .read<UserProvider>()
                                 .onboardBusinessUser(
                                   lineOne: _addressLine1Controller.text.trim(),
                                   lineTwo: _addressLine2Controller.text.trim(),
-                                  city: _cityController.text.trim(),
-                                  state: _stateController.text.trim(),
+                                  city: _cityValue,
+                                  state: _stateValue,
                                   zip: int.parse(_zipCodeController.text),
                                   category: _selectedCategory!,
                                   contact: int.parse(_contactController.text),
