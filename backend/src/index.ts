@@ -29,6 +29,9 @@ app.use(
   }),
 );
 
+app.get("/health", (req, res) => {
+  res.json({ message: "JJJF Backend is running..." });
+});
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/business", businessRoutes);
