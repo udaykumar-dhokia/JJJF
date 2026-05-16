@@ -6,6 +6,7 @@ class BusinessData {
   final int? contact;
   final String? website;
   final Address? address;
+  final String? logo;
 
   BusinessData({
     this.name,
@@ -13,6 +14,7 @@ class BusinessData {
     this.contact,
     this.website,
     this.address,
+    this.logo,
   });
 
   factory BusinessData.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class BusinessData {
       category: json['category'] as String?,
       contact: json['contact'] as int?,
       website: json['website'] as String?,
+      logo: json['logo'] as String?,
       address: json['address'] != null
           ? Address.fromJson(json['address'] as Map<String, dynamic>)
           : null,
@@ -31,8 +34,17 @@ class BusinessData {
 class BusinessUser {
   final BusinessData? business;
   final String uuid;
+  final String? firstName;
+  final String? lastName;
+  final String? profilePicture;
 
-  BusinessUser({this.business, required this.uuid});
+  BusinessUser({
+    this.business,
+    required this.uuid,
+    this.firstName,
+    this.lastName,
+    this.profilePicture,
+  });
 
   factory BusinessUser.fromJson(Map<String, dynamic> json) {
     return BusinessUser(
@@ -40,6 +52,9 @@ class BusinessUser {
           ? BusinessData.fromJson(json['business'] as Map<String, dynamic>)
           : null,
       uuid: json['uuid'] as String,
+      firstName: json['firstName'] as String?,
+      lastName: json['lastName'] as String?,
+      profilePicture: json['profilePicture'] as String?,
     );
   }
 }

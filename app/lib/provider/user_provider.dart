@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -63,6 +64,8 @@ class UserProvider with ChangeNotifier {
     String? maritalStatus,
     String? jobRole,
     String? companyName,
+    String? fatherName,
+    List<FamilyMember>? familyDetails,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final uuid = prefs.getString("userId");
@@ -90,6 +93,8 @@ class UserProvider with ChangeNotifier {
           "maritalStatus": maritalStatus,
           "jobRole": jobRole,
           "companyName": companyName,
+          "fatherName": fatherName,
+          "familyDetails": familyDetails?.map((e) => e.toJson()).toList(),
         }),
       );
 
@@ -179,6 +184,9 @@ class UserProvider with ChangeNotifier {
     String? maritalStatus,
     String? jobRole,
     String? companyName,
+    String? fatherName,
+    List<FamilyMember>? familyDetails,
+    bool? isMobileHidden,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final uuid = prefs.getString("userId");
@@ -203,9 +211,12 @@ class UserProvider with ChangeNotifier {
           "gaon": gaon,
           "district": district,
           "currentCity": currentCity,
-          "maritalStatus": maritalStatus,
+           "maritalStatus": maritalStatus,
           "jobRole": jobRole,
           "companyName": companyName,
+          "fatherName": fatherName,
+          "familyDetails": familyDetails?.map((e) => e.toJson()).toList(),
+          if (isMobileHidden != null) "isMobileHidden": isMobileHidden,
         }),
       );
 
@@ -224,6 +235,138 @@ class UserProvider with ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Update exception: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateBusinessProfile({
+    required String name,
+    required String category,
+    required int contact,
+    String? website,
+    required String lineOne,
+    String? lineTwo,
+    required String city,
+    required String state,
+    required int zip,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final uuid = prefs.getString("userId");
+
+    if (uuid == null) return false;
+
+    try {
+      final response = await http.put(
+        Uri.parse('${dotenv.env["BACKEND_URL"]!}/user/$uuid'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "business": {
+            "name": name,
+            "category": category,
+            "contact": contact,
+            "website": website ?? "",
+            "address": {
+              "lineOne": lineOne,
+              "lineTwo": lineTwo ?? "",
+              "city": city,
+              "state": state,
+              "zipCode": zip,
+            }
+          }
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        _user = User.fromJson(data["user"]);
+        _hasError = false;
+        _errorMessage = null;
+        notifyListeners();
+
+        return true;
+      } else {
+        debugPrint('Update business error: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Update business exception: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateProfilePicture(File image) async {
+    final prefs = await SharedPreferences.getInstance();
+    final uuid = prefs.getString("userId");
+
+    if (uuid == null) return false;
+
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('${dotenv.env["BACKEND_URL"]!}/user/$uuid/profile-picture'),
+      );
+      
+      request.files.add(
+        await http.MultipartFile.fromPath('image', image.path),
+      );
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.bytesToString();
+        var data = json.decode(responseData);
+
+        _user = User.fromJson(data["user"]);
+        _hasError = false;
+        _errorMessage = null;
+        notifyListeners();
+
+        return true;
+      } else {
+        debugPrint('Upload error: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Upload exception: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateBusinessLogo(File image) async {
+    final prefs = await SharedPreferences.getInstance();
+    final uuid = prefs.getString("userId");
+
+    if (uuid == null) return false;
+
+    try {
+      var request = http.MultipartRequest(
+        'PUT',
+        Uri.parse('${dotenv.env["BACKEND_URL"]!}/user/$uuid/business-logo'),
+      );
+      
+      request.files.add(
+        await http.MultipartFile.fromPath('image', image.path),
+      );
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.bytesToString();
+        var data = json.decode(responseData);
+
+        _user = User.fromJson(data["user"]);
+        _hasError = false;
+        _errorMessage = null;
+        notifyListeners();
+
+        return true;
+      } else {
+        debugPrint('Upload error: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Upload exception: $e');
       return false;
     }
   }

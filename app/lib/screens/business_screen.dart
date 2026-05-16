@@ -3,7 +3,7 @@ import 'package:app/constants/color.dart';
 import 'package:app/models/business_model.dart';
 import 'package:app/provider/business_provider.dart';
 import 'package:app/provider/user_provider.dart';
-import 'package:app/screens/user_contact_screen.dart';
+import 'package:app/screens/business_detail_screen.dart';
 import 'package:app/widgets/location_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -189,7 +189,6 @@ class _BusinessScreenState extends State<BusinessScreen> {
               return const Center(child: CupertinoActivityIndicator());
             }
 
-            // Optimization: Pre-calculate normalized values
             final normalizedSearch = _searchQuery.toLowerCase();
             final normalizedSelectCity = _selectedCity.trim().toLowerCase();
             final normalizedSelectState = _selectedState.trim().toLowerCase();
@@ -335,7 +334,7 @@ class _BusinessScreenState extends State<BusinessScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UserContactScreen(uuid: user.uuid),
+                builder: (context) => BusinessDetailScreen(businessUser: user),
               ),
             );
           },

@@ -48,6 +48,7 @@ dependencies:
   timeago: ^3.6.1
   carousel_slider: ^5.0.0
   flutter_launcher_icons: ^0.14.4
+  image_picker: ^1.2.2
 
 dev_dependencies:
   flutter_test:

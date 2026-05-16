@@ -36,14 +36,19 @@ class AppDrawer extends StatelessWidget {
             ),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Text(
-                user != null ? user.firstName[0].toUpperCase() : "G",
-                style: GoogleFonts.mulish(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
+              backgroundImage: user?.profilePicture != null
+                  ? NetworkImage(user!.profilePicture!)
+                  : null,
+              child: user?.profilePicture == null
+                  ? Text(
+                      user != null ? user.firstName[0].toUpperCase() : "G",
+                      style: GoogleFonts.mulish(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    )
+                  : null,
             ),
           ),
 

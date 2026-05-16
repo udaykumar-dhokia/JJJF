@@ -281,6 +281,15 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  if (user.fatherName != null && user.fatherName!.isNotEmpty)
+                    Text(
+                      'S/o: ${user.fatherName}',
+                      style: GoogleFonts.mulish(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
                   if (user.address?.city != null)
                     Text(
                       user.address!.city,
@@ -292,7 +301,15 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 ],
               ),
             ),
-            if (user.mobile != null)
+            if (user.mobile != null) ...[
+              IconButton(
+                icon: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedWhatsapp,
+                  size: 18,
+                  color: Colors.green,
+                ),
+                onPressed: () => _launchWhatsApp(user.mobile!),
+              ),
               IconButton(
                 icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedCall02,
@@ -301,10 +318,18 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 ),
                 onPressed: () => _launchDialer(user.mobile!),
               ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _launchWhatsApp(String phoneNumber) async {
+    final String url = "https://wa.me/91$phoneNumber";
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _launchDialer(String phoneNumber) async {

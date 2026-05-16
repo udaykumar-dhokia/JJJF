@@ -1,5 +1,6 @@
 import 'package:app/bottom_bar.dart';
 import 'package:app/constants/color.dart';
+import 'package:app/models/user_model.dart';
 import 'package:app/provider/user_provider.dart';
 import 'package:app/widgets/location_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +30,31 @@ class _OnboardScreenState extends State<OnboardScreen> {
   final TextEditingController _districtController = TextEditingController();
   final TextEditingController _jobRoleController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
+  final TextEditingController _fatherNameController = TextEditingController();
+
+  final List<FamilyMember> _familyMembers = [];
+
+  void _addFamilyMember() {
+    setState(() {
+      _familyMembers.add(FamilyMember(name: "", relation: "", occupation: ""));
+    });
+  }
+
+  void _removeFamilyMember(int index) {
+    setState(() {
+      _familyMembers.removeAt(index);
+    });
+  }
+
+  void _updateFamilyMember(int index, {String? name, String? relation, String? occupation}) {
+    setState(() {
+      _familyMembers[index] = FamilyMember(
+        name: name ?? _familyMembers[index].name,
+        relation: relation ?? _familyMembers[index].relation,
+        occupation: occupation ?? _familyMembers[index].occupation,
+      );
+    });
+  }
 
   String genderValue = "";
   String maritalStatusValue = "";
@@ -51,6 +77,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
     _districtController.dispose();
     _jobRoleController.dispose();
     _companyNameController.dispose();
+    _fatherNameController.dispose();
     super.dispose();
   }
 
@@ -144,7 +171,86 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 maxLength: 10,
                 decoration: _inputDecoration("Mobile Number*"),
               ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _fatherNameController,
+                decoration: _inputDecoration("Father's Name*"),
+                validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 16),
+
+              Text("Family Details", style: GoogleFonts.mulish(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
+              ..._familyMembers.asMap().entries.map((entry) {
+                int idx = entry.key;
+                FamilyMember member = entry.value;
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  color: AppColors.primaryLight.withAlpha(10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Family Member ${idx + 1}",
+                                style: GoogleFonts.mulish(fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
+                              onPressed: () => _removeFamilyMember(idx),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          initialValue: member.name,
+                          decoration: _inputDecoration("Name"),
+                          onChanged: (val) => _updateFamilyMember(idx, name: val),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: member.relation,
+                                decoration: _inputDecoration("Relation"),
+                                onChanged: (val) => _updateFamilyMember(idx, relation: val),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: member.occupation,
+                                decoration: _inputDecoration("Occupation"),
+                                onChanged: (val) => _updateFamilyMember(idx, occupation: val),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+              
+              OutlinedButton.icon(
+                onPressed: _addFamilyMember,
+                icon: const Icon(Icons.add, size: 18),
+                label: Text("Add Family Member", style: GoogleFonts.mulish()),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: BorderSide(color: AppColors.primary),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              const SizedBox(height: 24),
 
               Text("Personal Details.", style: GoogleFonts.mulish()),
               const SizedBox(height: 8),
@@ -353,6 +459,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                                   maritalStatus: maritalStatusValue,
                                   jobRole: _jobRoleController.text.trim(),
                                   companyName: _companyNameController.text.trim(),
+                                  fatherName: _fatherNameController.text.trim(),
+                                  familyDetails: _familyMembers,
                                 );
 
                             setState(() => _isLoading = false);

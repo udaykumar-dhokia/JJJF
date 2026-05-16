@@ -1,6 +1,7 @@
 import 'package:app/app_drawer.dart';
 import 'package:app/provider/navigation_provider.dart';
 import 'package:app/provider/directory_provider.dart';
+import 'package:app/provider/user_provider.dart';
 import 'package:app/constants/color.dart';
 import 'package:app/screens/anniversaries_screen.dart';
 import 'package:app/screens/birthdays_screen.dart';
@@ -42,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
+
     return Scaffold(
       drawer: const AppDrawer(),
       backgroundColor: Colors.white,
@@ -76,20 +79,28 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         actions: [
-          IconButton(
-            color: Colors.black,
-            tooltip: "Notifications",
-            onPressed: () {},
-            icon: HugeIcon(
-              icon: HugeIcons.strokeRoundedNotification02,
-              size: 18,
-            ),
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.primaryLight.withAlpha(18),
-              foregroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.primaryLight.withAlpha(78)),
-                borderRadius: BorderRadius.circular(100),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                context.read<NavigationProvider>().setIndex(4);
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColors.primaryLight.withAlpha(30),
+                backgroundImage: user?.profilePicture != null
+                    ? NetworkImage(user!.profilePicture!)
+                    : null,
+                child: user?.profilePicture == null
+                    ? Text(
+                        user != null ? user.firstName[0].toUpperCase() : "G",
+                        style: GoogleFonts.mulish(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : null,
               ),
             ),
           ),

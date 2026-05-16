@@ -24,6 +24,9 @@ const directoryController = {
           email: 1,
           mobile: 1,
           address: 1,
+          fatherName: 1,
+          isMobileHidden: 1,
+          profilePicture: 1,
         },
       );
       res.status(200).json({ users });

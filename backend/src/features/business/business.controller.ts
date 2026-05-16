@@ -8,6 +8,9 @@ const businessController = {
         {
           business: 1,
           uuid: 1,
+          firstName: 1,
+          lastName: 1,
+          profilePicture: 1,
           _id: 0,
         },
       );

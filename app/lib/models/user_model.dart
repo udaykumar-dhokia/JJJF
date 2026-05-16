@@ -21,6 +21,10 @@ class User {
   final String? maritalStatus;
   final String? jobRole;
   final String? companyName;
+  final String? fatherName;
+  final List<FamilyMember>? familyDetails;
+  final String? profilePicture;
+  final bool isMobileHidden;
 
   User({
     required this.id,
@@ -42,6 +46,10 @@ class User {
     this.maritalStatus,
     this.jobRole,
     this.companyName,
+    this.fatherName,
+    this.familyDetails,
+    this.profilePicture,
+    this.isMobileHidden = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -73,6 +81,42 @@ class User {
       maritalStatus: json['maritalStatus'],
       jobRole: json['jobRole'],
       companyName: json['companyName'],
+      fatherName: json['fatherName'],
+      familyDetails: json['familyDetails'] != null
+          ? (json['familyDetails'] as List)
+              .map((i) => FamilyMember.fromJson(i))
+              .toList()
+          : null,
+      profilePicture: json['profilePicture'],
+      isMobileHidden: json['isMobileHidden'] ?? false,
     );
+  }
+}
+
+class FamilyMember {
+  final String name;
+  final String relation;
+  final String occupation;
+
+  FamilyMember({
+    required this.name,
+    required this.relation,
+    required this.occupation,
+  });
+
+  factory FamilyMember.fromJson(Map<String, dynamic> json) {
+    return FamilyMember(
+      name: json['name'] ?? '',
+      relation: json['relation'] ?? '',
+      occupation: json['occupation'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'relation': relation,
+      'occupation': occupation,
+    };
   }
 }

@@ -46,24 +46,24 @@ final List<Map<String, dynamic>> menuItems = [
     'label': 'Contacts',
     'route': '/contacts',
   },
-  {
-    'icon': HugeIcons.strokeRoundedNews01,
-    'label': 'Shok Sandesh',
-    'route': '/shok-sandesh',
-  },
-  {
-    'icon': HugeIcons.strokeRoundedGroup01,
-    'label': 'Mandals',
-    'route': '/mandals',
-  },
-  {
-    'icon': HugeIcons.strokeRoundedYoutube,
-    'label': 'YouTube',
-    'route': '/youtube',
-  },
-  {
-    'icon': HugeIcons.strokeRoundedGraduateMale,
-    'label': 'Education',
-    'route': '/education',
-  },
+  // {
+  //   'icon': HugeIcons.strokeRoundedNews01,
+  //   'label': 'Shok Sandesh',
+  //   'route': '/shok-sandesh',
+  // },
+  // {
+  //   'icon': HugeIcons.strokeRoundedGroup01,
+  //   'label': 'Mandals',
+  //   'route': '/mandals',
+  // },
+  // {
+  //   'icon': HugeIcons.strokeRoundedYoutube,
+  //   'label': 'YouTube',
+  //   'route': '/youtube',
+  // },
+  // {
+  //   'icon': HugeIcons.strokeRoundedGraduateMale,
+  //   'label': 'Education',
+  //   'route': '/education',
+  // },
 ];

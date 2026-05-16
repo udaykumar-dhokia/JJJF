@@ -11,6 +11,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clerk_flutter/clerk_flutter.dart';
+import 'package:app/widgets/profile_avatar.dart';
+import 'package:app/widgets/business_logo.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -172,17 +174,9 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
 
-              CircleAvatar(
-                radius: 42,
-                backgroundColor: AppColors.primaryLight.withAlpha(30),
-                child: Text(
-                  user.firstName[0].toUpperCase(),
-                  style: GoogleFonts.mulish(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
+              ProfileAvatar(
+                firstName: user.firstName,
+                profilePicture: user.profilePicture,
               ),
               const SizedBox(height: 12),
 
@@ -301,8 +295,33 @@ class ProfileScreen extends StatelessWidget {
               if (user.isBusinessCompleted && user.business != null) ...[
                 const SizedBox(height: 16),
 
+                Center(
+                  child: BusinessLogo(
+                    businessName: user.business!.name ?? '',
+                    logoUrl: user.business!.logo,
+                  ),
+                ),
+                const SizedBox(height: 12),
+
                 _ProfileSection(
                   title: "Business Details",
+                  trailing: IconButton(
+                    icon: HugeIcon(icon: HugeIcons.strokeRoundedEdit02, size: 16),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BusinessOnboardScreen(isEditing: true),
+                        ),
+                      );
+                    },
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    style: const ButtonStyle(
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    color: AppColors.primary,
+                  ),
                   children: [
                     _ProfileTile(
                       icon: HugeIcons.strokeRoundedStore01,
@@ -349,20 +368,27 @@ class ProfileScreen extends StatelessWidget {
 class _ProfileSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
+  final Widget? trailing;
 
-  const _ProfileSection({required this.title, required this.children});
+  const _ProfileSection({required this.title, required this.children, this.trailing});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.mulish(
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: GoogleFonts.mulish(
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            if (trailing != null) trailing!,
+          ],
         ),
         const SizedBox(height: 6),
         Card(

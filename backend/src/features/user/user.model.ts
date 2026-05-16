@@ -39,6 +39,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    fatherName: {
+      type: String,
+    },
+    familyDetails: [
+      {
+        name: { type: String },
+        relation: { type: String },
+        occupation: { type: String },
+      },
+    ],
     mobile: {
       type: Number,
     },
@@ -76,6 +86,9 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
       address: addressSchema,
+      logo: {
+        type: String,
+      },
     },
     isProfileCompleted: {
       type: Boolean,
@@ -90,6 +103,13 @@ const userSchema = new mongoose.Schema(
     },
     anniversaryDate: {
       type: Date,
+    },
+    profilePicture: {
+      type: String,
+    },
+    isMobileHidden: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

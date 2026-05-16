@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:app/widgets/location_picker.dart';
 
 class BusinessOnboardScreen extends StatefulWidget {
-  const BusinessOnboardScreen({super.key});
+  final bool isEditing;
+  const BusinessOnboardScreen({super.key, this.isEditing = false});
 
   @override
   State<BusinessOnboardScreen> createState() => _BusinessOnboardScreenState();
@@ -44,6 +45,28 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
     'Consulting',
     'Others',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing) {
+      final user = context.read<UserProvider>().user;
+      if (user != null && user.business != null) {
+        _nameController.text = user.business!.name ?? '';
+        _contactController.text = user.business!.contact?.toString() ?? '';
+        _websiteController.text = user.business!.website ?? '';
+        _selectedCategory = user.business!.category;
+        
+        if (user.business!.address != null) {
+          _addressLine1Controller.text = user.business!.address!.lineOne ?? '';
+          _addressLine2Controller.text = user.business!.address!.lineTwo ?? '';
+          _stateValue = user.business!.address!.state ?? '';
+          _cityValue = user.business!.address!.city ?? '';
+          _zipCodeController.text = user.business!.address!.zipCode?.toString() ?? '';
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -83,7 +106,7 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          "Business Profile",
+          widget.isEditing ? "Edit Business Profile" : "Business Profile",
           style: GoogleFonts.mulish(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,
@@ -101,7 +124,9 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Complete your business profile by submitting the below details.",
+                widget.isEditing
+                    ? "Update your business profile details below."
+                    : "Complete your business profile by submitting the below details.",
                 style: GoogleFonts.mulish(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 18),
@@ -242,19 +267,33 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
                               return;
                             }
                             setState(() => _isLoading = true);
-                            final success = await context
-                                .read<UserProvider>()
-                                .onboardBusinessUser(
-                                  lineOne: _addressLine1Controller.text.trim(),
-                                  lineTwo: _addressLine2Controller.text.trim(),
-                                  city: _cityValue,
-                                  state: _stateValue,
-                                  zip: int.parse(_zipCodeController.text),
-                                  category: _selectedCategory!,
-                                  contact: int.parse(_contactController.text),
-                                  name: _nameController.text.trim(),
-                                  website: _websiteController.text.trim(),
-                                );
+                            
+                            bool success;
+                            if (widget.isEditing) {
+                              success = await context.read<UserProvider>().updateBusinessProfile(
+                                lineOne: _addressLine1Controller.text.trim(),
+                                lineTwo: _addressLine2Controller.text.trim(),
+                                city: _cityValue,
+                                state: _stateValue,
+                                zip: int.parse(_zipCodeController.text),
+                                category: _selectedCategory!,
+                                contact: int.parse(_contactController.text),
+                                name: _nameController.text.trim(),
+                                website: _websiteController.text.trim(),
+                              );
+                            } else {
+                              success = await context.read<UserProvider>().onboardBusinessUser(
+                                lineOne: _addressLine1Controller.text.trim(),
+                                lineTwo: _addressLine2Controller.text.trim(),
+                                city: _cityValue,
+                                state: _stateValue,
+                                zip: int.parse(_zipCodeController.text),
+                                category: _selectedCategory!,
+                                contact: int.parse(_contactController.text),
+                                name: _nameController.text.trim(),
+                                website: _websiteController.text.trim(),
+                              );
+                            }
 
                             setState(() => _isLoading = false);
 
@@ -262,9 +301,9 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
                               Navigator.of(context).pop();
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text(
-                                    "Failed to complete onboarding",
+                                    widget.isEditing ? "Failed to update business profile" : "Failed to complete onboarding",
                                   ),
                                 ),
                               );
@@ -280,7 +319,7 @@ class _BusinessOnboardScreenState extends State<BusinessOnboardScreen> {
                           ),
                         )
                       : Text(
-                          "Continue",
+                          "Save",
                           style: GoogleFonts.mulish(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

@@ -7,6 +7,7 @@ class DirectoryUser {
   final String email;
   final String? mobile;
   final Address? address;
+  final String? fatherName;
 
   DirectoryUser({
     required this.uuid,
@@ -15,6 +16,7 @@ class DirectoryUser {
     required this.email,
     this.mobile,
     this.address,
+    this.fatherName,
   });
 
   factory DirectoryUser.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class DirectoryUser {
       address: json['address'] != null
           ? Address.fromJson(json['address'])
           : null,
+      fatherName: json['fatherName'],
     );
   }
 }

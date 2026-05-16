@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:app/widgets/profile_avatar.dart';
+import 'package:app/widgets/business_logo.dart';
 
 class UserContactScreen extends StatefulWidget {
   final String uuid;
@@ -114,14 +116,14 @@ class _UserContactScreenState extends State<UserContactScreen> {
                       : null,
                   icon: const HugeIcon(
                     icon: HugeIcons.strokeRoundedCall02,
-                    size: 20,
+                    size: 18,
                     color: Colors.white,
                   ),
-                  label: Text("Call", style: GoogleFonts.mulish(fontSize: 16)),
+                  label: Text("Call", style: GoogleFonts.mulish(fontSize: 14)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -129,25 +131,47 @@ class _UserContactScreenState extends State<UserContactScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+
+              const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _launchEmail(user.email),
                   icon: HugeIcon(
                     icon: HugeIcons.strokeRoundedMail01,
-                    size: 20,
+                    size: 18,
                     color: AppColors.primary,
                   ),
-                  label: Text("Email", style: GoogleFonts.mulish(fontSize: 16)),
+                  label: Text("Email", style: GoogleFonts.mulish(fontSize: 14)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryLight.withOpacity(0.2),
                     foregroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: user.mobile != null
+                    ? () => _launchWhatsApp(user.mobile.toString())
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.all(10),
+                  minimumSize: const Size(44, 44),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedWhatsapp,
+                  size: 20,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -159,17 +183,10 @@ class _UserContactScreenState extends State<UserContactScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 42,
-              backgroundColor: AppColors.primaryLight.withAlpha(30),
-              child: Text(
-                user.firstName[0].toUpperCase(),
-                style: GoogleFonts.mulish(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
+            ProfileAvatar(
+              firstName: user.firstName,
+              profilePicture: user.profilePicture,
+              readOnly: true,
             ),
             const SizedBox(height: 12),
 
@@ -180,14 +197,111 @@ class _UserContactScreenState extends State<UserContactScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            if (user.fatherName != null && user.fatherName!.isNotEmpty)
+              Text(
+                "S/o: ${user.fatherName}",
+                style: GoogleFonts.mulish(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
             const SizedBox(height: 4),
 
             Text(
               user.email,
               style: GoogleFonts.mulish(color: Colors.grey.shade600),
             ),
+            const SizedBox(height: 4),
+
+            if (user.mobile != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.phone_outlined, size: 14, color: Colors.grey.shade600),
+                  const SizedBox(width: 6),
+                  Text(
+                    user.isMobileHidden
+                        ? "+91 ••••••••${user.mobile.toString().substring(user.mobile.toString().length - 2)}"
+                        : "+91 ${user.mobile}",
+                    style: GoogleFonts.mulish(
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
 
             const SizedBox(height: 24),
+
+            _ProfileSection(
+              title: "Personal Details",
+              children: [
+                if (user.birthDate != null)
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedBirthdayCake,
+                    title: "Birth Date",
+                    value:
+                        "${user.birthDate!.day}/${user.birthDate!.month}/${user.birthDate!.year}",
+                  ),
+                if (user.anniversaryDate != null)
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedCalendar03,
+                    title: "Anniversary",
+                    value:
+                        "${user.anniversaryDate!.day}/${user.anniversaryDate!.month}/${user.anniversaryDate!.year}",
+                  ),
+                if (user.maritalStatus != null &&
+                    user.maritalStatus!.isNotEmpty)
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedUserGroup,
+                    title: "Marital Status",
+                    value: user.maritalStatus!,
+                  ),
+                if (user.gaon != null && user.gaon!.isNotEmpty)
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedHome01,
+                    title: "Native Village (Gaon)",
+                    value: user.gaon!,
+                  ),
+                if (user.district != null && user.district!.isNotEmpty)
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedMapPin,
+                    title: "District",
+                    value: user.district!,
+                  ),
+                if (user.currentCity != null && user.currentCity!.isNotEmpty)
+                  _ProfileTile(
+                    icon: HugeIcons.strokeRoundedBuilding02,
+                    title: "Current City",
+                    value: user.currentCity!,
+                  ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            if ((user.jobRole != null && user.jobRole!.isNotEmpty) ||
+                (user.companyName != null && user.companyName!.isNotEmpty)) ...[
+              _ProfileSection(
+                title: "Professional Details",
+                children: [
+                  if (user.jobRole != null && user.jobRole!.isNotEmpty)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedWorkHistory,
+                      title: "Job Role",
+                      value: user.jobRole!,
+                    ),
+                  if (user.companyName != null && user.companyName!.isNotEmpty)
+                    _ProfileTile(
+                      icon: HugeIcons.strokeRoundedBuilding01,
+                      title: "Company",
+                      value: user.companyName!,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
 
             _ProfileSection(
               title: "Contact Information",
@@ -205,6 +319,22 @@ class _UserContactScreenState extends State<UserContactScreen> {
                 ),
               ],
             ),
+
+            const SizedBox(height: 16),
+
+            if (user.familyDetails != null && user.familyDetails!.isNotEmpty)
+              _ProfileSection(
+                title: "Family Details",
+                children: user.familyDetails!
+                    .map(
+                      (member) => _ProfileTile(
+                        icon: HugeIcons.strokeRoundedUserGroup,
+                        title: member.relation,
+                        value: "${member.name} (${member.occupation})",
+                      ),
+                    )
+                    .toList(),
+              ),
 
             const SizedBox(height: 16),
 
@@ -276,6 +406,13 @@ class _UserContactScreenState extends State<UserContactScreen> {
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
+    }
+  }
+
+  Future<void> _launchWhatsApp(String phoneNumber) async {
+    final String url = "https://wa.me/91$phoneNumber";
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     }
   }
 

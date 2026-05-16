@@ -19,6 +19,8 @@ const AuthController = {
       maritalStatus,
       jobRole,
       companyName,
+      fatherName,
+      familyDetails,
     } = req.body;
 
     if (
@@ -35,10 +37,13 @@ const AuthController = {
     }
 
     try {
+      const isMobileHidden = gender === "Female";
+      
       const user = await User.findOneAndUpdate(
         { uuid },
         {
           isProfileCompleted: true,
+          isMobileHidden,
           mobile,
           birthDate,
           anniversaryDate,
@@ -56,6 +61,8 @@ const AuthController = {
           maritalStatus,
           jobRole,
           companyName,
+          fatherName,
+          familyDetails: familyDetails || [],
         },
         { new: true },
       );
